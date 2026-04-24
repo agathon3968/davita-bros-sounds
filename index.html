@@ -5,16 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- PRIMARY SEO TAGS -->
-    <title>Davita Bros. Sounds | Premium Royalty Free Music for Creators</title>
-    <meta name="description" content="Elevate your content with premium royalty free music from Davita Bros. Sounds. Download high-quality tracks for YouTube, TikTok & commercial projects.">
+    <title id="pageTitle">Davita Bros. Sounds | Premium Royalty Free Music for Creators</title>
+    <meta name="description" id="pageMeta" content="Elevate your content with premium royalty free music from Davita Bros. Sounds. High-quality tracks for YouTube, TikTok & commercial projects.">
     
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, deleteDoc, doc, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, deleteDoc, doc, orderBy, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // EMBEDDED CONFIG - תיקון ישיר בתוך הקוד לפתרון בעיית הטעינה
         const firebaseConfig = {
           "apiKey": "AIzaSyBtdqx8EHV5sYf3-0rQ_srhvx1rAe1V3Hg",
           "authDomain": "davita-bros.firebaseapp.com",
@@ -33,7 +32,7 @@
         window.db = db;
         window.auth = auth;
         window.appId = appId;
-        window.firestoreTools = { collection, addDoc, onSnapshot, query, deleteDoc, doc, orderBy };
+        window.firestoreTools = { collection, addDoc, onSnapshot, query, deleteDoc, doc, orderBy, getDoc };
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -48,7 +47,7 @@
             const loader = document.getElementById('loadingOverlay');
             if (loader) {
                 loader.style.opacity = '0';
-                setTimeout(() => loader.style.display = 'none', 600);
+                setTimeout(() => loader.style.display = 'none', 700);
             }
         }
         setTimeout(hideLoader, 5000); 
@@ -74,236 +73,358 @@
         body { font-family: 'Outfit', sans-serif; background-color: #0a0d14; color: #f8fafc; scroll-behavior: smooth; }
         h1, h2, h3, .font-display { font-family: 'Syne', sans-serif; letter-spacing: -0.02em; }
         .glass-card { background: rgba(26, 31, 46, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .track-card:hover { transform: translateY(-6px); border-color: rgba(245, 158, 11, 0.3); }
-        .logo-img { height: 44px; width: auto; object-fit: contain; }
+        .track-card:hover { transform: translateY(-10px); border-color: rgba(245, 158, 11, 0.4); box-shadow: 0 20px 40px -10px rgba(245, 158, 11, 0.1); }
+        .logo-img { height: 48px; width: auto; object-fit: contain; }
         .view-section { display: none; }
-        .view-section.active { display: block; }
-        .partner-logo { filter: grayscale(100%) opacity(40%); transition: 0.4s; }
+        .view-section.active { display: block; animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .partner-logo { filter: grayscale(100%) opacity(30%); transition: 0.5s; }
         .partner-logo:hover { filter: grayscale(0%) opacity(100%); color: #f59e0b; }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0a0d14; }
-        ::-webkit-scrollbar-thumb { background: #1a1f2e; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
     </style>
 </head>
 <body class="overflow-x-hidden">
 
-    <!-- מסך טעינה יוקרתי -->
+    <!-- Loading Overlay -->
     <div id="loadingOverlay" class="fixed inset-0 bg-brand-dark z-[200] flex flex-col items-center justify-center transition-opacity duration-700">
         <div class="flex gap-2 mb-6">
             <div class="w-4 h-12 bg-brand-orange animate-bounce"></div>
             <div class="w-4 h-16 bg-brand-accent animate-bounce" style="animation-delay: 0.1s"></div>
             <div class="w-4 h-10 bg-brand-amber animate-bounce" style="animation-delay: 0.2s"></div>
         </div>
-        <p class="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] animate-pulse">Davita Bros. Sound Cloud</p>
+        <p class="text-slate-500 text-[10px] font-black uppercase tracking-[0.5em] animate-pulse text-center px-4">Davita Bros. Premium Sounds</p>
     </div>
 
     <!-- Navigation -->
-    <header class="sticky top-0 z-50 glass-card py-4 border-b border-white/5">
+    <header class="sticky top-0 z-50 glass-card py-5 border-b border-white/5">
         <div class="container mx-auto px-6 flex justify-between items-center">
             <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('store')">
                 <img src="logo.jpg" alt="Logo" class="logo-img" onerror="this.src='logo.jpg.jpg'; this.onerror=function(){this.style.display='none'; document.getElementById('text-logo').style.display='block'}">
-                <h1 id="text-logo" class="hidden text-2xl font-black text-white font-display uppercase tracking-tight">
-                    DAVITA <span class="text-brand-orange">BROS.</span> <span class="text-slate-500 font-light text-lg">SOUNDS</span>
+                <h1 id="text-logo" class="hidden text-3xl font-black text-white font-display uppercase tracking-tight">
+                    DAVITA <span class="text-brand-orange">BROS.</span>
                 </h1>
             </div>
             
-            <nav class="hidden md:flex gap-8 items-center text-xs font-bold uppercase tracking-widest">
+            <nav class="hidden lg:flex gap-8 items-center text-[10px] font-black uppercase tracking-[0.2em]">
                 <a href="javascript:void(0)" onclick="switchView('store')" class="hover:text-brand-orange transition">Library</a>
-                <a href="javascript:void(0)" onclick="switchView('dashboard')" class="text-brand-orange/60 hover:text-brand-orange transition flex items-center gap-2"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> Admin</a>
-                <button onclick="showToast('Pro features coming soon!', 'info')" class="bg-gradient-to-r from-brand-orange to-brand-accent hover:opacity-90 px-6 py-2.5 rounded-xl font-bold transition shadow-lg shadow-brand-orange/20 text-brand-dark">JOIN PRO</button>
+                <a href="javascript:void(0)" onclick="switchView('licensing')" class="hover:text-brand-orange transition">Licensing</a>
+                <a href="javascript:void(0)" onclick="switchView('pricing')" class="hover:text-brand-orange transition">Pricing</a>
+                <a href="javascript:void(0)" onclick="switchView('contact')" class="hover:text-brand-orange transition">Contact</a>
+                <a href="javascript:void(0)" onclick="switchView('dashboard')" class="text-brand-orange/40 hover:text-brand-orange flex items-center gap-2 transition"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> Admin</a>
+                <button onclick="switchView('pricing')" class="bg-gradient-to-r from-brand-orange to-brand-accent hover:opacity-90 px-8 py-3 rounded-2xl font-black transition shadow-xl shadow-brand-orange/20 text-brand-dark">JOIN PRO</button>
             </nav>
-
-            <button class="md:hidden text-white"><i data-lucide="menu"></i></button>
         </div>
     </header>
 
     <!-- STORE FRONT VIEW -->
     <main id="storeView" class="view-section active">
         <!-- Hero Section -->
-        <section class="py-28 relative overflow-hidden text-center">
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-brand-orange/5 blur-[120px] rounded-full -z-10"></div>
-            <div class="container mx-auto px-6">
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 mb-8 text-[10px] font-bold tracking-[0.3em] text-brand-orange uppercase bg-brand-orange/10 rounded-full border border-brand-orange/20">
+        <section class="py-32 relative overflow-hidden text-center px-6">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[600px] bg-brand-orange/5 blur-[150px] rounded-full -z-10"></div>
+            <div class="container mx-auto">
+                <div class="inline-flex items-center gap-2 px-5 py-2 mb-10 text-[9px] font-black tracking-[0.4em] text-brand-orange uppercase bg-brand-orange/10 rounded-full border border-brand-orange/20">
                     <span class="relative flex h-2 w-2">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-orange opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-orange"></span>
                     </span>
-                    Daily Updated Library
+                    The Producer's Choice
                 </div>
-                <h2 class="text-6xl md:text-8xl font-black mb-8 leading-[0.9] tracking-tighter text-white font-display uppercase">
+                <h2 class="text-6xl md:text-[100px] font-black mb-10 leading-[0.85] tracking-tighter text-white font-display uppercase">
                     Premium <br/> <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange via-brand-amber to-brand-accent">Royalty Free Music</span>
                 </h2>
-                <p class="text-xl text-slate-400 max-w-2xl mx-auto mb-12 italic">
+                <p class="text-xl text-slate-400 max-w-2xl mx-auto mb-16 italic font-light">
                     "Engineered for creators. Copyright-cleared for global storytelling."
                 </p>
-                <div class="flex flex-wrap justify-center gap-4">
-                    <a href="#library" class="bg-white text-brand-dark px-10 py-4 rounded-2xl font-bold hover:bg-slate-100 transition shadow-xl uppercase text-xs tracking-widest">Browse Library</a>
-                    <a href="javascript:void(0)" class="bg-brand-navy border border-white/10 px-10 py-4 rounded-2xl font-bold hover:bg-brand-navy/80 transition uppercase text-xs tracking-widest text-white">Join the Club</a>
+                <div class="flex flex-wrap justify-center gap-5">
+                    <a href="#library" class="bg-white text-brand-dark px-12 py-5 rounded-3xl font-black uppercase text-xs tracking-[0.2em] shadow-2xl hover:bg-slate-100 transition">Explore Library</a>
+                    <a href="javascript:void(0)" onclick="switchView('pricing')" class="bg-brand-navy border border-white/10 px-12 py-5 rounded-3xl font-black uppercase text-xs tracking-[0.2em] text-white hover:bg-brand-navy/80 transition">Pricing Plans</a>
                 </div>
             </div>
         </section>
 
-        <!-- Partner Logos -->
-        <section class="py-16 border-y border-white/5 bg-white/[0.01]">
+        <!-- Social Proof Section -->
+        <section class="py-20 border-y border-white/5 bg-white/[0.02]">
             <div class="container mx-auto px-6 text-center">
-                <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-12">Trusted by 10,000+ top content creators</p>
-                <div class="flex flex-wrap justify-center items-center gap-10 md:gap-20">
-                    <div class="partner-logo flex items-center gap-2 font-display text-lg font-bold"><i data-lucide="video"></i> NEOSTREAM</div>
-                    <div class="partner-logo flex items-center gap-2 font-display text-lg font-bold"><i data-lucide="clapperboard"></i> PIXELPEAK</div>
-                    <div class="partner-logo flex items-center gap-2 font-display text-lg font-bold"><i data-lucide="radio"></i> AUDIOVIBE</div>
-                    <div class="partner-logo flex items-center gap-2 font-display text-lg font-bold"><i data-lucide="camera"></i> URBANREELS</div>
+                <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-12">Trusted by 10,000+ top content creators</p>
+                <div class="flex flex-wrap justify-center items-center gap-12 md:gap-24">
+                    <div class="partner-logo flex items-center gap-3 font-display text-xl font-bold italic tracking-tighter"><i data-lucide="video"></i> NEOSTREAM</div>
+                    <div class="partner-logo flex items-center gap-3 font-display text-xl font-bold italic tracking-tighter"><i data-lucide="clapperboard"></i> PIXELPEAK</div>
+                    <div class="partner-logo flex items-center gap-3 font-display text-xl font-bold italic tracking-tighter"><i data-lucide="radio"></i> AUDIOVIBE</div>
+                    <div class="partner-logo flex items-center gap-3 font-display text-xl font-bold italic tracking-tighter"><i data-lucide="camera"></i> REELSPLUS</div>
                 </div>
             </div>
         </section>
 
-        <!-- Library Section -->
-        <section id="library" class="container mx-auto px-6 py-24">
-            <div class="glass-card p-10 rounded-[3rem] border-brand-orange/10 mb-16 flex flex-wrap gap-8 items-end justify-between">
-                <div class="flex flex-wrap gap-8">
-                    <div class="flex flex-col gap-2">
-                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Sort By Genre</label>
-                        <select id="genreFilter" class="bg-brand-dark border border-white/10 rounded-xl px-5 py-3 text-white text-sm outline-none focus:border-brand-orange transition cursor-pointer">
-                            <option value="all">All Genres</option>
-                            <option value="cinematic">Cinematic</option>
-                            <option value="electronic">Electronic</option>
-                            <option value="lofi">Lo-Fi</option>
-                            <option value="corporate">Corporate</option>
-                        </select>
+        <!-- Why Davita Bros? -->
+        <section class="py-24 container mx-auto px-6">
+            <div class="text-center mb-20">
+                <h3 class="text-4xl font-black font-display uppercase text-white mb-4 tracking-tighter">Why <span class="text-brand-orange">Davita Bros?</span></h3>
+                <p class="text-slate-500 italic max-w-lg mx-auto">We solve the music problem for professional content creators.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="glass-card p-10 rounded-[3rem] text-center border-white/5">
+                    <div class="w-16 h-16 bg-brand-orange/10 rounded-2xl flex items-center justify-center text-brand-orange mx-auto mb-8 shadow-inner">
+                        <i data-lucide="shield-check" class="w-8 h-8"></i>
                     </div>
+                    <h3 class="text-xl font-bold text-white mb-4 uppercase font-display tracking-tight">100% Copyright Safe</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">No claims. No strikes. Our legal license protects your channel forever, even after you cancel.</p>
                 </div>
-                <div class="relative w-full md:w-96 group">
-                    <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-brand-orange transition"></i>
-                    <input type="text" id="searchInput" placeholder="Search title or artist..." class="w-full bg-brand-dark border border-white/10 rounded-xl py-3 pl-11 pr-5 text-white outline-none focus:border-brand-orange transition-all">
+                <div class="glass-card p-10 rounded-[3rem] text-center border-brand-orange/20 scale-105">
+                    <div class="w-16 h-16 bg-brand-orange/20 rounded-2xl flex items-center justify-center text-brand-orange mx-auto mb-8 shadow-inner">
+                        <i data-lucide="headphones" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4 uppercase font-display tracking-tight">High-Fidelity WAV</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Studio-grade audio quality that sounds professional on any speaker system or movie theater.</p>
+                </div>
+                <div class="glass-card p-10 rounded-[3rem] text-center border-white/5">
+                    <div class="w-16 h-16 bg-brand-orange/10 rounded-2xl flex items-center justify-center text-brand-orange mx-auto mb-8 shadow-inner">
+                        <i data-lucide="zap" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4 uppercase font-display tracking-tight">Unlimited Freedom</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Browse thousands of hand-crafted tracks and download exactly what you need without limit.</p>
                 </div>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10" id="musicGrid">
-                <!-- Tracks loaded via JS -->
-            </div>
+        </section>
+
+        <!-- Music Grid -->
+        <section id="library" class="container mx-auto px-6 py-12">
+            <h3 class="text-4xl font-black font-display uppercase text-white mb-16 tracking-tighter">The <span class="text-brand-orange">Library</span></h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12" id="musicGrid"></div>
         </section>
     </main>
 
-    <!-- ADMIN DASHBOARD VIEW -->
-    <main id="dashboardView" class="view-section container mx-auto px-6 py-16">
-        <div class="flex justify-between items-center mb-12">
-            <h2 class="text-4xl font-black font-display uppercase text-white tracking-tighter">Cloud <span class="text-brand-orange">Management</span></h2>
-            <button onclick="switchView('store')" class="text-[10px] font-bold text-slate-500 hover:text-white uppercase tracking-widest transition">Exit Dashboard</button>
+    <!-- TRACK DETAIL VIEW (Dynamic) -->
+    <main id="trackDetailView" class="view-section container mx-auto px-6 py-20">
+        <button onclick="switchView('store')" class="flex items-center gap-2 text-slate-500 hover:text-white transition mb-12 uppercase font-black text-[10px] tracking-widest">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Library
+        </button>
+        <div id="trackDetailContent" class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center"></div>
+    </main>
+
+    <!-- PRICING VIEW -->
+    <main id="pricingView" class="view-section container mx-auto px-6 py-20 px-6">
+        <div class="text-center mb-24">
+            <h2 class="text-6xl font-black font-display uppercase text-white mb-6 tracking-tighter">Choose Your <span class="text-brand-orange">Plan</span></h2>
+            <p class="text-slate-500 max-w-xl mx-auto italic">Professional coverage for everything from personal vlogs to global commercial projects.</p>
         </div>
-        
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-            <div class="glass-card p-10 rounded-[3rem] border-brand-orange/20 h-fit">
-                <h3 class="text-xl font-bold mb-8 font-display text-white uppercase tracking-tight">Publish New Track</h3>
-                <form id="addTrackForm" class="space-y-5">
-                    <input type="text" id="newTrackName" placeholder="Track Title" required class="w-full bg-brand-dark border border-white/10 rounded-xl px-5 py-4 text-white text-sm outline-none focus:border-brand-orange transition">
-                    <input type="text" id="newTrackSlug" placeholder="Slug (exact filename, e.g. Jazz%20Night)" required class="w-full bg-brand-dark border border-white/10 rounded-xl px-5 py-4 text-white text-sm outline-none focus:border-brand-orange transition">
-                    <div class="grid grid-cols-2 gap-4">
-                        <select id="newTrackGenre" class="bg-brand-dark border border-white/10 rounded-xl p-3 text-white text-[10px] uppercase font-bold tracking-widest">
-                            <option value="cinematic">Cinematic</option>
-                            <option value="lofi">Lo-Fi</option>
-                            <option value="electronic">Electronic</option>
-                            <option value="corporate">Corporate</option>
-                        </select>
-                        <select id="newTrackMood" class="bg-brand-dark border border-white/10 rounded-xl p-3 text-white text-[10px] uppercase font-bold tracking-widest">
-                            <option value="energetic">Energetic</option>
-                            <option value="chill">Chill</option>
-                            <option value="happy">Happy</option>
-                        </select>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto items-stretch">
+             <!-- Plan 1: Personal -->
+             <div class="glass-card p-12 rounded-[4rem] border border-white/5 flex flex-col transition hover:scale-105">
+                <h3 class="text-xl font-black mb-4 text-slate-400 uppercase font-display tracking-tight">Personal</h3>
+                <p class="text-5xl font-black mb-10 text-white">$0 <span class="text-sm font-normal text-slate-500">/mo</span></p>
+                <ul class="space-y-5 mb-12 text-slate-400 text-sm flex-grow">
+                    <li class="flex items-center gap-3"><i data-lucide="check" class="text-brand-orange w-4 h-4"></i> Personal Use (Social Media)</li>
+                    <li class="flex items-center gap-3"><i data-lucide="check" class="text-brand-orange w-4 h-4"></i> Standard MP3 Files</li>
+                    <li class="flex items-center gap-3"><i data-lucide="check" class="text-brand-orange w-4 h-4"></i> Regular Library Access</li>
+                    <li class="flex items-center gap-3 text-slate-600 line-through"><i data-lucide="x" class="w-4 h-4"></i> No Paid Commercial License</li>
+                </ul>
+                <button class="w-full bg-white/5 border border-white/10 py-5 rounded-2xl uppercase font-black text-[10px] tracking-widest hover:bg-white/10 transition">Start Free</button>
+             </div>
+             
+             <!-- Plan 2: Creator (Requested $5) -->
+             <div class="glass-card p-12 rounded-[4rem] border-2 border-brand-orange relative flex flex-col scale-110 shadow-2xl shadow-brand-orange/10 z-10 transition hover:scale-[1.12]">
+                <div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-brand-orange text-brand-dark px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">Most Popular</div>
+                <h3 class="text-xl font-black mb-4 text-white uppercase font-display tracking-tight">Creator</h3>
+                <p class="text-5xl font-black mb-10 text-white">$5 <span class="text-sm font-normal text-slate-500">/mo</span></p>
+                <ul class="space-y-5 mb-12 text-slate-300 text-sm flex-grow">
+                    <li class="flex items-center gap-3"><i data-lucide="check" class="text-brand-orange w-5 h-5"></i> Commercial Use (Monetized Content)</li>
+                    <li class="flex items-center gap-3"><i data-lucide="check" class="text-brand-orange w-5 h-5"></i> High Fidelity WAV Files</li>
+                    <li class="flex items-center gap-3"><i data-lucide="check" class="text-brand-orange w-5 h-5"></i> Unlimited Downloads</li>
+                    <li class="flex items-center gap-3"><i data-lucide="check" class="text-brand-orange w-5 h-5"></i> YouTube Channel Whitelisting</li>
+                </ul>
+                <button class="w-full bg-brand-orange text-brand-dark py-5 rounded-2xl uppercase font-black text-[10px] tracking-widest shadow-xl shadow-brand-orange/20 hover:opacity-90 transition">Join Creator</button>
+             </div>
+             
+             <!-- Plan 3: PRO (Requested $10) -->
+             <div class="glass-card p-12 rounded-[4rem] border border-white/5 flex flex-col transition hover:scale-105">
+                <h3 class="text-xl font-black mb-4 text-slate-200 uppercase font-display tracking-tight">PRO</h3>
+                <p class="text-5xl font-black mb-10 text-white font-display italic">$10 <span class="text-sm font-normal text-slate-500">/mo</span></p>
+                <ul class="space-y-5 mb-12 text-slate-400 text-sm flex-grow">
+                    <li class="flex items-center gap-3"><i data-lucide="check" class="text-brand-orange w-4 h-4"></i> All Creator Features</li>
+                    <li class="flex items-center gap-3"><i data-lucide="check" class="text-brand-orange w-4 h-4"></i> Full Broadcast Rights (TV/Radio)</li>
+                    <li class="flex items-center gap-3"><i data-lucide="check" class="text-brand-orange w-4 h-4"></i> Organization License (Team Use)</li>
+                    <li class="flex items-center gap-3"><i data-lucide="check" class="text-brand-orange w-4 h-4"></i> Priority Live Support</li>
+                </ul>
+                <button onclick="switchView('contact')" class="w-full bg-white/5 border border-white/10 py-5 rounded-2xl uppercase font-black text-[10px] tracking-widest hover:bg-white/10 transition">Go Pro</button>
+             </div>
+        </div>
+    </main>
+
+    <!-- LICENSING VIEW -->
+    <main id="licensingView" class="view-section container mx-auto px-6 py-24 max-w-5xl">
+        <h2 class="text-6xl font-black font-display uppercase text-white mb-16 text-center tracking-tighter">Legal & <span class="text-brand-orange">Licensing</span></h2>
+        <div class="glass-card p-14 rounded-[4rem] space-y-16 text-slate-300 leading-relaxed shadow-2xl">
+            <section>
+                <h3 class="text-3xl font-bold text-white mb-6 uppercase font-display tracking-tight border-b border-white/5 pb-4">1. The Grant</h3>
+                <p>Upon subscription, Davita Bros. Sounds granting you a non-exclusive, worldwide, perpetual license to synchronize the musical recordings provided in your media productions.</p>
+            </section>
+            <section>
+                <h3 class="text-3xl font-bold text-white mb-6 uppercase font-display tracking-tight border-b border-white/5 pb-4">2. Usage Tiers</h3>
+                <p>The <strong>Creator</strong> license covers social media monetization. The <strong>PRO</strong> license extends these rights to national television, radio, and cinema broadcast.</p>
+            </section>
+            <div class="bg-brand-orange/5 p-10 rounded-[2.5rem] border border-brand-orange/20 text-center">
+                <p class="text-slate-400 italic">For custom legal contracts or enterprise queries, reach us at:</p>
+                <p class="text-2xl font-black text-brand-orange mt-2 uppercase font-display">bestnewmusicart@gmail.com</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- CONTACT VIEW -->
+    <main id="contactView" class="view-section container mx-auto px-6 py-24 max-w-5xl">
+        <div class="text-center mb-20 px-6">
+            <h2 class="text-7xl font-black font-display uppercase text-white mb-6 tracking-tighter">Start <span class="text-brand-orange">Talking</span></h2>
+            <p class="text-slate-500 text-lg italic text-center">Inquiries are usually handled within 24 hours.</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center px-6">
+            <div class="space-y-10">
+                <div class="glass-card p-10 rounded-[3rem] border-brand-orange/10">
+                    <h3 class="text-xl font-bold text-white mb-10 font-display uppercase tracking-tight">Direct Support</h3>
+                    <div class="flex items-center gap-6">
+                        <div class="w-16 h-16 rounded-3xl bg-brand-orange/10 flex items-center justify-center text-brand-orange"><i data-lucide="mail"></i></div>
+                        <div>
+                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Official Email</p>
+                            <a href="mailto:bestnewmusicart@gmail.com" class="text-xl font-bold text-white hover:text-brand-orange transition">bestnewmusicart@gmail.com</a>
+                        </div>
                     </div>
-                    <button type="submit" class="w-full bg-brand-orange text-brand-dark py-5 rounded-2xl font-black uppercase text-xs tracking-widest mt-4 shadow-xl shadow-brand-orange/20 hover:scale-[1.02] transition">Add to Live Library</button>
+                </div>
+            </div>
+            <div class="glass-card p-12 rounded-[4rem]">
+                <form class="space-y-6" onsubmit="event.preventDefault(); alert('Message sent!'); this.reset();">
+                    <input type="text" placeholder="Full Name" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-5 text-white outline-none focus:border-brand-orange transition">
+                    <input type="email" placeholder="Email Address" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-5 text-white outline-none focus:border-brand-orange transition">
+                    <textarea placeholder="Your Message..." required class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-5 text-white outline-none focus:border-brand-orange h-40 transition"></textarea>
+                    <button type="submit" class="w-full bg-brand-orange text-brand-dark py-5 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl">Send Transmission</button>
                 </form>
             </div>
-            <div class="lg:col-span-2 glass-card p-10 rounded-[3rem]">
-                <h3 class="text-xl font-bold mb-8 font-display text-white uppercase tracking-tight">Active Library Manager</h3>
-                <div id="adminTrackList" class="space-y-4"></div>
-            </div>
         </div>
     </main>
 
-    <!-- Notification Toast -->
-    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 px-8 py-4 rounded-2xl shadow-2xl z-[300] font-bold text-xs uppercase tracking-widest opacity-0 pointer-events-none transition-all duration-500 transform translate-y-4 flex items-center gap-3"></div>
+    <!-- ABOUT VIEW -->
+    <main id="aboutView" class="view-section container mx-auto px-6 py-24 max-w-5xl text-center px-6">
+        <h2 class="text-7xl font-black font-display uppercase text-white leading-none tracking-tighter mb-10">Pure <span class="text-brand-orange">Sound.</span></h2>
+        <div class="glass-card p-10 rounded-[3.5rem] text-slate-300 space-y-6 text-lg font-light italic leading-relaxed">
+            <p>Davita Bros. Sounds was born out of a simple frustration: Stock music that sounds like stock music.</p>
+            <p>We are a boutique collective of audio engineers and film producers dedicated to crafting high-fidelity soundscapes that actually tell a story. Every track is engineered for clarity and emotional impact.</p>
+        </div>
+    </main>
+
+    <!-- ADMIN VIEW (Requested Efficiency Update) -->
+    <main id="dashboardView" class="view-section container mx-auto px-6 py-20 px-6">
+        <h2 class="text-4xl font-black font-display uppercase text-white mb-12 tracking-tighter">Admin <span class="text-brand-orange">Control</span></h2>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <div class="glass-card p-10 rounded-[3rem] border-brand-orange/20">
+                <h3 class="text-xl font-bold mb-8 text-white uppercase font-display tracking-tight">Quick Add Release</h3>
+                <p class="text-[9px] text-slate-500 uppercase font-black mb-6 tracking-widest">Type the exact track name to automate paths</p>
+                <form id="addTrackForm" class="space-y-4">
+                    <input type="text" id="newTrackName" placeholder="Enter Track Name (e.g. French Jazz)" required class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white outline-none focus:border-brand-orange transition">
+                    <textarea id="newTrackDesc" placeholder="Optional description for SEO..." class="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white outline-none focus:border-brand-orange h-32 transition"></textarea>
+                    
+                    <div id="quickAddPreview" class="hidden p-4 bg-brand-orange/5 border border-brand-orange/20 rounded-xl space-y-2">
+                         <p class="text-[8px] text-slate-500 uppercase font-black">Path Preview:</p>
+                         <p id="previewSlug" class="text-[10px] text-brand-orange truncate"></p>
+                    </div>
+
+                    <button type="submit" class="w-full bg-brand-orange text-brand-dark py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl hover:opacity-90 transition">Publish Release</button>
+                </form>
+            </div>
+            <div class="lg:col-span-2 glass-card p-10 rounded-[3rem]" id="adminTrackList"></div>
+        </div>
+    </main>
 
     <audio id="globalAudioPlayer"></audio>
 
     <script type="module">
         const IMG_BASE = "https://pub-a14abfa301934c3788527e6064f93a2f.r2.dev/davitabrosclub/";
         const MP3_BASE = "https://pub-acf6feb033d4412781e15519b365166b.r2.dev/tracks/preview/";
+        const WAV_BASE = "https://pub-acf6feb033d4412781e15519b365166b.r2.dev/tracks/full/";
+        
+        let allTracks = [];
 
         window.addEventListener('firebaseReady', () => {
-            syncTracks();
-        });
-
-        function syncTracks() {
             const { collection, onSnapshot, query, orderBy } = window.firestoreTools;
             const q = query(collection(window.db, 'artifacts', window.appId, 'public', 'data', 'tracks'), orderBy('createdAt', 'desc'));
-            
             onSnapshot(q, (snapshot) => {
-                const tracks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderTracks(tracks);
-                renderAdminList(tracks);
-            }, (err) => {
-                console.error("Firestore error:", err);
-                showToast("Connection error. Refreshing...", "error");
+                allTracks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderTracks();
+                renderAdminList();
             });
-        }
+        });
 
-        window.renderTracks = function(data) {
+        window.switchView = function(view, trackId = null) {
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(view + 'View');
+            if (target) target.classList.add('active');
+            window.scrollTo(0,0);
+
+            const titleEl = document.getElementById('pageTitle');
+            const metaEl = document.getElementById('pageMeta');
+
+            if (view === 'store') {
+                titleEl.innerText = "Davita Bros. Sounds | Premium Royalty Free Music";
+                metaEl.content = "Browse our library of premium tracks for creators.";
+            } else if (view === 'trackDetail' && trackId) {
+                const track = allTracks.find(t => t.id === trackId);
+                if (track) {
+                    titleEl.innerText = `${track.title} | Premium Music License`;
+                    metaEl.content = track.description || `Download ${track.title} for your projects.`;
+                    renderTrackDetail(track);
+                }
+            } else if (view === 'licensing') titleEl.innerText = "License Terms | Davita Bros. Sounds";
+            else if (view === 'contact') titleEl.innerText = "Contact Us | Davita Bros. Sounds";
+            else if (view === 'about') titleEl.innerText = "About Us | Davita Bros. Sounds";
+            else if (view === 'pricing') titleEl.innerText = "Pricing | Davita Bros. Sounds";
+        };
+
+        function renderTracks() {
             const grid = document.getElementById('musicGrid');
             if (!grid) return;
-
-            const searchVal = document.getElementById('searchInput').value.toLowerCase();
-            const genreVal = document.getElementById('genreFilter').value;
-            
-            const filtered = data.filter(t => {
-                const matchSearch = t.title.toLowerCase().includes(searchVal);
-                const matchGenre = genreVal === 'all' || t.genre === genreVal;
-                return matchSearch && matchGenre;
-            });
-
-            if (filtered.length === 0) {
-                grid.innerHTML = `<div class="col-span-full py-20 text-slate-600 italic">No tracks found matching your criteria.</div>`;
-                return;
-            }
-
-            grid.innerHTML = filtered.map(t => `
-                <article class="track-card glass-card rounded-[3rem] p-8 border border-white/5 group">
-                    <div class="aspect-square bg-brand-dark rounded-[2.5rem] mb-8 overflow-hidden relative group">
-                        <img src="${IMG_BASE}${t.slug}.jpg" class="w-full h-full object-cover opacity-60 group-hover:opacity-90 group-hover:scale-110 transition duration-1000" onerror="this.src='https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600'">
+            grid.innerHTML = allTracks.map(t => `
+                <article class="track-card glass-card rounded-[3.5rem] p-10 border border-white/5 group cursor-pointer shadow-xl" onclick="switchView('trackDetail', '${t.id}')">
+                    <div class="aspect-square bg-brand-dark rounded-[3rem] mb-8 overflow-hidden relative">
+                        <img src="${IMG_BASE}${t.slug}.jpg" class="w-full h-full object-cover opacity-50 group-hover:opacity-80 group-hover:scale-110 transition duration-[1500ms]" onerror="this.src='https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=500'">
                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-500 scale-90 group-hover:scale-100">
-                            <button onclick="window.playTrack('${MP3_BASE}${t.slug}.mp3')" class="bg-brand-orange p-6 rounded-full text-brand-dark shadow-2xl hover:scale-110 transition">
-                                <i data-lucide="play" class="fill-current w-8 h-8"></i>
-                            </button>
-                        </div>
-                        <div class="absolute bottom-4 left-4">
-                             <span class="bg-brand-orange/20 text-brand-orange text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-brand-orange/20 backdrop-blur-md">${t.genre || 'Sound'}</span>
+                             <div class="bg-brand-orange p-6 rounded-full text-brand-dark shadow-2xl"><i data-lucide="play" class="fill-current w-8 h-8"></i></div>
                         </div>
                     </div>
-                    <h4 class="font-bold text-xl text-white font-display uppercase tracking-tight mb-2">${t.title}</h4>
-                    <div class="flex justify-between items-end mt-8">
-                        <div class="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em]">${t.mood || 'High Fidelity'}</div>
-                        <button onclick="window.downloadPreview('${t.title}', '${MP3_BASE}${t.slug}.mp3')" class="bg-white/5 hover:bg-white/10 text-white p-3 rounded-2xl border border-white/5 transition">
-                            <i data-lucide="download" class="w-4 h-4"></i>
-                        </button>
-                    </div>
+                    <h4 class="font-bold text-2xl text-white font-display uppercase tracking-tight text-center">${t.title}</h4>
+                    <p class="text-[10px] font-black text-slate-600 uppercase mt-8 tracking-widest italic text-center">Preview & Details <i data-lucide="arrow-right" class="inline w-3 h-3"></i></p>
                 </article>
             `).join('');
             lucide.createIcons();
         }
 
-        window.renderAdminList = function(data) {
-            const list = document.getElementById('adminTrackList');
-            if(!list) return;
-            list.innerHTML = data.map(t => `
-                <div class="bg-white/5 p-6 rounded-2xl flex justify-between items-center border border-white/5 hover:border-brand-orange/20 transition">
-                    <div>
-                        <p class="text-white font-bold tracking-tight">${t.title}</p>
-                        <p class="text-slate-600 text-[9px] font-black uppercase tracking-[0.2em] mt-1">${t.genre} • ${t.slug}</p>
+        function renderTrackDetail(t) {
+            const content = document.getElementById('trackDetailContent');
+            content.innerHTML = `
+                <div class="rounded-[5rem] overflow-hidden glass-card p-5 border-brand-orange/20 shadow-2xl relative">
+                    <img src="${IMG_BASE}${t.slug}.jpg" class="w-full aspect-square object-cover rounded-[4rem]" onerror="this.src='https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800'">
+                </div>
+                <div class="space-y-12 text-center lg:text-left">
+                    <h2 class="text-7xl md:text-[90px] font-black font-display uppercase text-white leading-none tracking-tighter">${t.title}</h2>
+                    <div class="flex flex-wrap justify-center lg:justify-start items-center gap-6">
+                        <button onclick="window.playTrack('${MP3_BASE}${t.slug}.mp3')" class="bg-brand-orange text-brand-dark px-12 py-6 rounded-[2rem] font-black uppercase text-xs flex items-center gap-3 hover:scale-105 transition shadow-2xl shadow-brand-orange/30">
+                            <i data-lucide="play-circle"></i> Play Preview
+                        </button>
+                        <button onclick="window.switchView('pricing')" class="bg-white/5 border border-white/10 text-white px-12 py-6 rounded-[2rem] font-black uppercase text-xs hover:bg-white/10 transition">License Now</button>
                     </div>
-                    <button onclick="window.deleteItem('${t.id}')" class="bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white p-3 rounded-xl transition">
-                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                    </button>
+                    <div class="glass-card p-12 rounded-[3.5rem] border-white/5">
+                        <h3 class="text-[10px] font-black uppercase text-brand-orange tracking-[0.4em] mb-6">Sound Description</h3>
+                        <p class="text-slate-400 leading-relaxed text-xl font-light italic">"${t.description || "A masterful production designed for high-impact visual synchronization."}"</p>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function renderAdminList() {
+            const list = document.getElementById('adminTrackList');
+            list.innerHTML = `<h3 class="text-xl font-bold mb-10 text-white uppercase font-display tracking-tight">Active Releases</h3>` + 
+            allTracks.map(t => `
+                <div class="bg-white/5 p-6 rounded-2xl flex justify-between items-center mb-4 border border-white/5 group">
+                    <div class="flex items-center gap-4">
+                         <img src="${IMG_BASE}${t.slug}.jpg" class="w-12 h-12 rounded-lg object-cover bg-brand-dark" onerror="this.style.opacity=0.1">
+                         <p class="text-white font-bold">${t.title}</p>
+                    </div>
+                    <button onclick="window.removeItem('${t.id}')" class="text-red-500 hover:bg-red-500/10 p-3 rounded-xl transition"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                 </div>
             `).join('');
             lucide.createIcons();
@@ -311,65 +432,45 @@
 
         window.playTrack = (url) => {
             const p = document.getElementById('globalAudioPlayer');
-            p.src = url;
-            p.play();
-            showToast("Now Playing Preview", "info");
+            p.src = url; p.play();
         };
 
-        window.downloadPreview = (name, url) => {
-            const a = document.createElement('a'); a.href = url; a.target = "_blank"; a.download = `${name}.mp3`;
-            document.body.appendChild(a); a.click(); document.body.removeChild(a);
-            showToast("Downloading Preview...", "success");
-        };
-
-        window.deleteItem = async (id) => {
-            if(!confirm("Are you sure you want to delete this track from the cloud?")) return;
+        window.removeItem = async (id) => {
+            if(!confirm("Erase track?")) return;
             const { doc, deleteDoc } = window.firestoreTools;
-            try {
-                await deleteDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'tracks', id));
-                showToast("Track Deleted", "info");
-            } catch (err) {
-                showToast("Failed to delete", "error");
-            }
+            await deleteDoc(doc(window.db, 'artifacts', window.appId, 'public', 'data', 'tracks', id));
         };
 
-        window.switchView = (v) => {
-            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(v + 'View').classList.add('active');
-            window.scrollTo(0,0);
+        // Quick Add Logic
+        document.getElementById('newTrackName').oninput = (e) => {
+            const val = e.target.value;
+            const preview = document.getElementById('quickAddPreview');
+            const previewSlug = document.getElementById('previewSlug');
+            if (val) {
+                preview.classList.remove('hidden');
+                previewSlug.innerText = `Slug: ${encodeURIComponent(val.trim())}`;
+            } else {
+                preview.classList.add('hidden');
+            }
         };
 
         document.getElementById('addTrackForm').onsubmit = async (e) => {
             e.preventDefault();
             const { collection, addDoc } = window.firestoreTools;
             const title = document.getElementById('newTrackName').value;
-            const slug = document.getElementById('newTrackSlug').value;
-            const genre = document.getElementById('newTrackGenre').value;
-            const mood = document.getElementById('newTrackMood').value;
-            
-            try {
-                await addDoc(collection(window.db, 'artifacts', window.appId, 'public', 'data', 'tracks'), {
-                    title, slug, genre, mood, createdAt: Date.now()
-                });
-                showToast(`"${title}" Published!`, "success");
-                e.target.reset();
-            } catch (err) {
-                showToast("Cloud Upload Failed", "error");
-            }
-        };
+            // אוטומציה של ה-Slug על בסיס השם
+            const slug = encodeURIComponent(title.trim());
 
-        window.showToast = function(text, type) {
-            const t = document.getElementById('toast');
-            t.innerHTML = `<i data-lucide="${type === 'success' ? 'check-circle' : 'info'}"></i> ${text}`;
-            t.className = `fixed bottom-10 left-1/2 -translate-x-1/2 px-8 py-4 rounded-2xl shadow-2xl z-[300] font-bold text-xs uppercase tracking-widest opacity-100 pointer-events-auto transform translate-y-0 flex items-center gap-3 transition-all duration-500 ${type === 'success' ? 'bg-brand-orange text-brand-dark' : 'bg-brand-navy text-white'}`;
-            lucide.createIcons();
-            setTimeout(() => {
-                t.className = t.className.replace('opacity-100', 'opacity-0').replace('translate-y-0', 'translate-y-4');
-            }, 3000);
+            await addDoc(collection(window.db, 'artifacts', window.appId, 'public', 'data', 'tracks'), {
+                title,
+                slug,
+                description: document.getElementById('newTrackDesc').value,
+                createdAt: Date.now()
+            });
+            e.target.reset();
+            document.getElementById('quickAddPreview').classList.add('hidden');
+            alert("Release Published!");
         };
-
-        document.getElementById('genreFilter').onchange = () => renderTracks(window.lastData || []);
-        document.getElementById('searchInput').oninput = () => renderTracks(window.lastData || []);
 
         lucide.createIcons();
     </script>
